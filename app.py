@@ -1,9 +1,19 @@
 from flask import Flask, request, send_file, render_template
+from werkzeug.utils import secure_filename
 import os
 import uuid
 import ffmpeg
 
+# Increase upload limit (e.g., 100MB)
 app = Flask(__name__)
+app.config['MAX_CONTENT_LENGTH'] = 100 * 1024 * 1024  # 100MB
+
+# from flask import Flask, request, send_file, render_template
+# import os
+# import uuid
+# import ffmpeg
+
+# app = Flask(__name__)
 UPLOAD_FOLDER = "uploads"
 OUTPUT_FOLDER = "output"
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
