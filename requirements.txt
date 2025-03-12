@@ -1,4 +1,3 @@
-Flask
+flask
 ffmpeg-python
-werkzeug
 gunicorn
