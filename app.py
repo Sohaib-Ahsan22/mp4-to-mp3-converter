@@ -12,7 +12,7 @@ app.config['MAX_CONTENT_LENGTH'] = 100 * 1024 * 1024  # 100MB
 os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
 os.makedirs(app.config['OUTPUT_FOLDER'], exist_ok=True)
 
-# HTML, CSS & JS in Python String
+# HTML + CSS + JS in Python String
 HTML_TEMPLATE = """
 <!DOCTYPE html>
 <html lang="en">
@@ -21,27 +21,10 @@ HTML_TEMPLATE = """
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>MP4 to MP3 Converter</title>
     <style>
-        body {
-            font-family: Arial, sans-serif;
-            text-align: center;
-            background-color: #f4f4f4;
-            margin: 0;
-            padding: 0;
-        }
-        .container {
-            margin-top: 50px;
-        }
-        #progress-container {
-            display: none;
-            position: fixed;
-            top: 20px;
-            left: 50%;
-            transform: translateX(-50%);
-            background: #333;
-            color: #fff;
-            padding: 10px 20px;
-            border-radius: 5px;
-        }
+        body { font-family: Arial, sans-serif; text-align: center; background-color: #f4f4f4; }
+        .container { margin-top: 50px; }
+        #progress-container { display: none; position: fixed; top: 20px; left: 50%; transform: translateX(-50%);
+            background: #333; color: #fff; padding: 10px 20px; border-radius: 5px; }
         .hidden { display: none; }
         video { max-width: 100%; margin-top: 20px; }
     </style>
@@ -50,17 +33,13 @@ HTML_TEMPLATE = """
 
 <div class="container">
     <h1>MP4 to MP3 Converter</h1>
-    
     <input type="file" id="fileInput" accept="video/mp4">
     <button onclick="uploadFile()">Upload & Convert</button>
-
     <div id="progress-container">Converting... Please wait</div>
-
     <div id="video-preview-container" class="hidden">
         <h3>Video Preview:</h3>
         <video id="video-preview" controls></video>
     </div>
-
     <div id="download-container" class="hidden">
         <h3>Download MP3:</h3>
         <a id="download-link" href="" download>Download MP3</a>
@@ -147,5 +126,5 @@ def download_file(filename):
 
 if __name__ == "__main__":
     import os
-    port = int(os.environ.get("PORT", 5000))  # Railway will assign a dynamic port
+    port = int(os.environ.get("PORT", 5000))  # Railway assigns a dynamic port
     app.run(host="0.0.0.0", port=port)
