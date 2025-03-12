@@ -63,7 +63,8 @@ def upload_page():
                     a.remove();
                     statusDiv.innerHTML = "<p class='text-success'>Conversion Successful!</p>";
                 } else {
-                    statusDiv.innerHTML = "<p class='text-danger'>File conversion failed</p>";
+                    let errorMessage = await response.text();
+                    statusDiv.innerHTML = `<p class='text-danger'>File conversion failed: ${errorMessage}</p>`;
                 }
             }
         </script>
@@ -89,10 +90,17 @@ def convert_file():
     file.save(input_path)
     
     try:
-        ffmpeg.input(input_path).output(output_path, format='mp3', audio_bitrate='192k').run(overwrite_output=True)
+        (
+            ffmpeg
+            .input(input_path)
+            .output(output_path, format='mp3', audio_bitrate='192k')
+            .run(overwrite_output=True, capture_stdout=True, capture_stderr=True)
+        )
         return send_file(output_path, as_attachment=True)
-    except Exception as e:
-        return f"Conversion error: {str(e)}", 500
+    except ffmpeg.Error as e:
+        error_message = e.stderr.decode()
+        print("FFmpeg Error:", error_message)
+        return f"Conversion error: {error_message}", 500
 
 if __name__ == '__main__':
     app.run(debug=True)
