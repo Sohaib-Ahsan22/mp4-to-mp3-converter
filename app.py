@@ -18,11 +18,34 @@ def upload_page():
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>MP4 to MP3 Converter</title>
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+        <style>
+            body { background-color: #f8f9fa; }
+            .container { max-width: 500px; margin-top: 50px; }
+            .card { padding: 20px; border-radius: 10px; }
+        </style>
+    </head>
+    <body>
+        <div class="container">
+            <div class="card shadow">
+                <h2 class="text-center">MP4 to MP3 Converter</h2>
+                <input type="file" id="fileInput" class="form-control my-3" accept="video/mp4">
+                <button class="btn btn-primary w-100" onclick="uploadFile()">Convert & Download</button>
+                <div id="status" class="text-center mt-3"></div>
+            </div>
+        </div>
         <script>
             async function uploadFile() {
                 let formData = new FormData();
                 let fileInput = document.getElementById("fileInput");
+                let statusDiv = document.getElementById("status");
+                if (fileInput.files.length === 0) {
+                    statusDiv.innerHTML = "<p class='text-danger'>Please select a file!</p>";
+                    return;
+                }
+                
                 formData.append("file", fileInput.files[0]);
+                statusDiv.innerHTML = "<p class='text-warning'>Converting...</p>";
                 
                 let response = await fetch("/convert", {
                     method: "POST",
@@ -38,16 +61,12 @@ def upload_page():
                     document.body.appendChild(a);
                     a.click();
                     a.remove();
+                    statusDiv.innerHTML = "<p class='text-success'>Conversion Successful!</p>";
                 } else {
-                    alert("File conversion failed");
+                    statusDiv.innerHTML = "<p class='text-danger'>File conversion failed</p>";
                 }
             }
         </script>
-    </head>
-    <body>
-        <h2>Upload MP4 to Convert to MP3</h2>
-        <input type="file" id="fileInput" accept="video/mp4">
-        <button onclick="uploadFile()">Convert & Download</button>
     </body>
     </html>
     '''
@@ -69,10 +88,11 @@ def convert_file():
     
     file.save(input_path)
     
-    # Convert MP4 to MP3 using ffmpeg
-    ffmpeg.input(input_path).output(output_path, format='mp3').run()
-    
-    return send_file(output_path, as_attachment=True)
+    try:
+        ffmpeg.input(input_path).output(output_path, format='mp3', audio_bitrate='192k').run(overwrite_output=True)
+        return send_file(output_path, as_attachment=True)
+    except Exception as e:
+        return f"Conversion error: {str(e)}", 500
 
 if __name__ == '__main__':
     app.run(debug=True)
